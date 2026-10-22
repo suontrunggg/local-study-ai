@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Study AI Local — Trợ Lý Học Thuật & Nghiên Cứu</title>
+
+  <!-- Google Fonts & KaTeX CSS -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+
+  <link rel="stylesheet" href="style.css?v=5.1" />
+  <link rel="stylesheet" href="u032-upload.css?v=5.1" />
+</head>
+<body>
+  <!-- AMBIENT GLOW (LUCIANLABS INSPIRED) -->
+  <div class="ambient-glow"></div>
+
+  <!-- FROSTED GLASS NAVBAR -->
+  <header class="apple-nav">
+    <div class="nav-container">
+      <div class="nav-brand" id="resetHomeBtn" title="Về trang chủ">
+        <span class="brand-wordmark"><span class="word-lucian">study</span><span class="word-labs">AI</span><span class="word-dot">.</span></span>
+        <span class="brand-badge">OFFLINE GPU</span>
+      </div>
+
+      <!-- Cụm điều khiển bên phải -->
+      <div class="nav-actions">
+        <div class="model-pill model-auto-pill" id="autoModelPill" title="AI tự động đánh giá độ phức tạp câu hỏi để điều phối model tối ưu nhất (Zero-config)">
+          <span class="status-dot status-auto-dot" id="ollamaStatusDot"></span>
+          <span class="auto-tag">AUTO</span>
+          <span class="auto-model-display" id="currentModelBadge">Smart Router</span>
+          <select id="modelSelect" style="display:none;" aria-hidden="true">
+            <option value="auto" selected>Tự động đánh giá</option>
+          </select>
+        </div>
+
+        <button class="icon-btn" id="openSettingsBtn" title="Cấu hình tham số Context & Temperature">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </button>
+
+        <button class="icon-btn" id="openShareBtn" title="Kết nối điện thoại / Chia sẻ QR">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+        </button>
+
+        <a href="/dashboard" target="_blank" class="icon-btn" id="openDashBtn" title="Admin Dashboard — Giám sát & Phân tích">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <line x1="18" y1="20" x2="18" y2="10"></line>
+            <line x1="12" y1="20" x2="12" y2="4"></line>
+            <line x1="6" y1="20" x2="6" y2="14"></line>
+          </svg>
+        </a>
+
+        <button class="icon-btn" id="themeToggleBtn" title="Đổi giao diện Sáng / Tối">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+
+        <button class="new-chat-pill" id="clearChatBtn">Phiên mới</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- RIBBON THÔNG BÁO MƯỢT MÀ KIỂU APPLE STORE -->
+  <div class="apple-ribbon">
+    <span>⚡ Vận hành 100% ngoại tuyến trên GPU nội bộ • Tích hợp xuất slide PPTX & Python Sandbox 10s • Không phụ thuộc mạng ngoài.</span>
+  </div>
+
+  <!-- MAIN WORKSPACE -->
+  <main class="store-main">
+    <!-- HERO & BENTO SHELF (LUCIANLABS EDITORIAL STAGE) -->
+    <section class="store-hero-section" id="heroSection">
+      <!-- 1. HERO TRACK & 3D ISOMETRIC WORKSPACE -->
+      <div class="hero-track">
+        <div class="home-intro" aria-labelledby="page-title">
+          <div class="hero-rules" aria-hidden="true"></div>
+          <div class="hero-topline">
+            <span>01 / LOCAL AI ENGINE &amp; SANDBOX</span>
+            <span>100% OFFLINE GPU • VRAM</span>
+          </div>
+
+          <div class="hero-wordmark" aria-hidden="true">
+            <span class="word-lucian">study</span><span class="word-labs">AI<span class="word-dot">.</span></span>
+          </div>
+
+          <div class="intro-copy">
+            <div class="eyebrow">HỌC THUẬT &amp; NGHIÊN CỨU NGOẠI TUYẾN</div>
+            <h1 id="page-title">Vận hành 100% Offline GPU.<br>Tích hợp Sandbox &amp; PPT-Master.</h1>
+            <p class="intro-description">
+              Trợ lý Qwen 2.5 7B &amp; DeepSeek-R1 chuyên sâu cho Kinh tế lượng, Khoa học dữ liệu, lập trình &amp; trình chiếu bài giảng.<br>Bảo mật tuyệt đối, thực thi code an toàn không qua mạng ngoài.
+            </p>
+          </div>
+
+          <!-- 3D PERSPECTIVE FLOATING WORKSPACE LAYERS -->
+          <div class="workspace-visual" aria-label="Không gian làm việc Study AI">
+            <!-- Layer 1: Back (Local GPU Engine) -->
+            <div class="workspace-layer layer-back" data-rotate="-12">
+              <span class="panel-top"><span>03 / LOCAL GPU ENGINE</span><span>↗</span></span>
+              <strong>Qwen 2.5</strong>
+              <div class="document-lines"><i></i><i></i><i></i></div>
+              <span class="instruction-change">− Mạng ngoài &amp; Rò rỉ dữ liệu</span>
+              <span class="instruction-change added">+ 100% Offline GPU VRAM</span>
+              <span class="panel-bottom">Bảo mật tuyệt đối tài liệu nghiên cứu.</span>
+            </div>
+
+            <!-- Layer 2: Middle (Python Sandbox) -->
+            <div class="workspace-layer layer-middle" data-rotate="9">
+              <span class="panel-top"><span>02 / PYTHON SANDBOX</span><span>↗</span></span>
+              <strong>OLS &amp;<br><em>AST Safety.</em></strong>
+              <div class="context-strip"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+              <span class="panel-bottom">Thực thi code 10s • Trực quan hóa dữ liệu.</span>
+            </div>
+
+            <!-- Layer 3: Front (PPT-Master Swiss Slide Deck) -->
+            <div class="workspace-layer layer-front" data-rotate="-7">
+              <span class="panel-top"><span>01 / PPT-MASTER</span><span>↗</span></span>
+              <strong>Swiss Deck<span class="terminal-cursor" aria-hidden="true">_</span></strong>
+              <div class="hero-queue">
+                <div><span>01</span><span>Slide Thuyết Trình</span><b>↗</b></div>
+                <div><span>02</span><span>Xuất file .PPTX</span><b>↳</b></div>
+              </div>
+              <span class="panel-bottom">Layout 16:9 sắc nét, Speaker Notes đầy đủ.</span>
+            </div>
+          </div>
+
+          <div class="hero-bottom">
+            <a class="primary-link" href="#library">
+              <span>Khám phá các chuyên ngành</span>
+              <span aria-hidden="true">↓</span>
+            </a>
+            <span class="hero-count">6 Không Gian Nghiên Cứu Chuyên Sâu</span>
+            <div class="hero-status-pill">
+              <span class="badge-dot"></span>
+              <span>GPU Engine Ready</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. THE COLLECTION (LUCIANLABS BENTO PROJECT GRID) -->
+      <div class="projects-section" id="library">
+        <div class="section-heading">
+          <div>
+            <div class="eyebrow">THE COLLECTION</div>
+            <h2>Chuyên ngành nghiên cứu<sup>06</sup></h2>
+          </div>
+          <p>Chọn không gian làm việc tối ưu hóa cho từng môn học &amp; bài toán.</p>
+        </div>
+
+        <div class="project-grid apple-shelf" id="appleShelf">
+          <!-- Card 1: Econometrics & Data Science (Full Banner Card like project-next) -->
+          <article class="project-card project-next shelf-card" data-mode="datascience" data-prompt="Giải thích bản chất ước lượng OLS, ma trận phương sai sai số thay đổi (Robust Standard Errors) và viết đoạn code Python mô phỏng bằng statsmodels.">
+            <div class="project-visual">
+              <span class="visual-word" aria-hidden="true">OLS.</span>
+              <div class="visual-index">01 / KINH TẾ LƯỢNG &amp; DATA</div>
+              <div class="window mini-terminal">
+                <div class="window-bar"><i></i><i></i><i></i><span>Python Sandbox</span></div>
+                <div class="terminal-body">
+                  <span class="terminal-comment"># Mô hình hồi quy OLS &amp; Robust SE</span>
+                  <p><b>❯</b> smf.ols("y ~ x1 + x2", data=df).fit(cov_type='HC1')</p>
+                  <div class="queue-status card-visual">
+                    <span>↳</span>
+                    <span>$$\hat{\beta} = (X^T X)^{-1} X^T Y$$</span>
+                  </div>
+                </div>
+              </div>
+              <span class="visual-note">Statsmodels • Matplotlib • Sandbox AST</span>
+            </div>
+            <div class="project-content">
+              <span class="project-number" aria-hidden="true">01</span>
+              <div class="project-heading">
+                <h3>Kinh tế lượng &amp; Data Science</h3>
+                <span class="license">OFFLINE SANDBOX</span>
+              </div>
+              <h4>Phân tích OLS, IV-2SLS &amp; Chuỗi thời gian</h4>
+              <p class="project-description">Tối ưu hóa mô hình hồi quy, đọc bảng Stata/R và thực thi code Python trực tiếp trong Sandbox nội bộ với giới hạn an toàn 10s.</p>
+              <ul class="project-details">
+                <li>OLS &amp; WLS Regression</li>
+                <li>White / Newey-West Robust SE</li>
+                <li>Vẽ đồ thị Matplotlib</li>
+              </ul>
+              <div class="project-link">
+                <span>Bắt đầu nghiên cứu</span>
+                <span aria-hidden="true">↗</span>
+              </div>
+            </div>
+          </article>
+
+          <!-- Card 2: Macro & Economics (project-token style) -->
+          <article class="project-card project-token shelf-card" data-mode="business" data-prompt="Trình bày mô hình tăng trưởng kinh tế Solow-Swan với tiến bộ công nghệ ngoại sinh, xác định trạng thái dừng (Steady State) và Quy tắc Vàng (Golden Rule).">
+            <div class="project-visual">
+              <span class="visual-word" aria-hidden="true">SOLOW.</span>
+              <div class="visual-index">02 / KINH TẾ VĨ MÔ &amp; CHIẾN LƯỢC</div>
+              <div class="token-report">
+                <div class="report-title">STEADY STATE DYNAMICS<span>↗</span></div>
+                <div class="report-bars">
+                  <span style="--size:90%"></span>
+                  <span style="--size:65%"></span>
+                  <span style="--size:42%"></span>
+                </div>
+                <div class="card-visual" style="margin: 12px 0 6px;">
+                  <span>$$\Delta k = s f(k) - (\delta + n + g)k$$</span>
+                </div>
+                <div class="report-foot">Quy tắc Vàng (Golden Rule) &amp; Cân bằng vĩ mô.</div>
+              </div>
+              <span class="visual-note">Mô hình Solow-Swan • IS-LM</span>
+            </div>
+            <div class="project-content">
+              <span class="project-number" aria-hidden="true">02</span>
+              <div class="project-heading">
+                <h3>Kinh tế Vĩ mô &amp; Quản trị</h3>
+                <span class="license">THEORY &amp; MATH</span>
+              </div>
+              <h4>Mô hình Solow, IS-LM &amp; Phân tích thị trường</h4>
+              <p class="project-description">Kết hợp biểu diễn toán học chặt chẽ với phân tích chính sách tài khóa, tiền tệ và quản trị chiến lược doanh nghiệp.</p>
+              <ul class="project-details">
+                <li>Mô hình Solow-Swan</li>
+                <li>Cân bằng IS-LM-BP</li>
+                <li>Định giá &amp; Chiến lược</li>
+              </ul>
+              <div class="project-link">
+                <span>Bắt đầu nghiên cứu</span>
+                <span aria-hidden="true">↗</span>
+              </div>
+            </div>
+          </article>
+
+          <!-- Card 3: Document & Paper RAG (project-astra style) -->
+          <article class="project-card project-astra shelf-card" data-mode="document" id="shelfUploadCard">
+            <div class="project-visual">
+              <span class="visual-word" aria-hidden="true">RAG.</span>
+              <div class="visual-index">03 / TÀI LIỆU KHOA HỌC &amp; DATASET</div>
+              <div class="instruction-sheet">
+                <div class="sheet-top"><span>PAPER.pdf</span><span>→</span><span>SANDBOX</span></div>
+                <div class="instruction-line"></div>
+                <div class="instruction-line short"></div>
+                <div class="diff-line minus">− Bỏ sót bảng hồi quy &amp; công thức</div>
+                <div class="diff-line plus">+ Trích xuất 100% Bảng số liệu &amp; CSV</div>
+                <div class="sheet-footer">PDF • DOCX • CSV • TSV • Ctx 16K</div>
+              </div>
+              <span class="visual-note">Nhấn để tải file</span>
+            </div>
+            <div class="project-content">
+              <span class="project-number" aria-hidden="true">03</span>
+              <div class="project-heading">
+                <h3>Đọc Tài liệu &amp; Nạp Dataset</h3>
+                <span class="license">DRAG &amp; DROP #032</span>
+              </div>
+              <h4>Đọc PDF, Paper Khoa học &amp; File Dữ liệu CSV</h4>
+              <p class="project-description">Tự động nạp tài liệu vào bộ nhớ ngữ cảnh 16,384 tokens và nạp trực tiếp dataframe CSV vào Sandbox Python để vẽ biểu đồ.</p>
+              <ul class="project-details">
+                <li>PDF / DOCX Trích bảng</li>
+                <li>CSV / TSV Auto Sandbox</li>
+                <li>Tóm tắt luận điểm</li>
+              </ul>
+              <div class="project-link">
+                <span>Tải file lên</span>
+                <span aria-hidden="true">↗</span>
+              </div>
+            </div>
+          </article>
+
+          <!-- Card 4: Slide Deck & Presentation (project-film banner style) -->
+          <article class="project-card project-film shelf-card" data-mode="slides" data-prompt="Dựa trên tài liệu đính kèm hoặc chủ đề nghiên cứu, hãy thiết kế một bộ SLIDE THUYẾT TRÌNH BẢO VỆ ĐỀ TÀI hoàn chỉnh (5-7 slide) chuẩn layout Swiss Design, có thông điệp cốt lõi, bố cục 2-3 cột và Speaker Notes chi tiết để thuyết phục hội đồng.">
+            <div class="project-visual">
+              <span class="visual-word" aria-hidden="true">PPTX.</span>
+              <div class="visual-index">04 / PPT-MASTER • SWISS DESIGN</div>
+              <div class="film-workflow">
+                <div class="film-command">Swiss Deck<span>↗</span></div>
+                <div class="film-steps">
+                  <span>01<br><b>Luận điểm</b></span><i>→</i>
+                  <span>02<br><b>2 Cột Swiss</b></span><i>→</i>
+                  <span>03<br><b>.PPTX 16:9</b></span>
+                </div>
+                <div class="timeline"><span></span><span></span><span></span><span></span><span></span></div>
+              </div>
+              <span class="visual-note">Xuất file PowerPoint thật</span>
+            </div>
+            <div class="project-content">
+              <span class="project-number" aria-hidden="true">04</span>
+              <div class="project-heading">
+                <h3>Thiết Kế Slide Deck PPTX</h3>
+                <span class="license">PPT-MASTER</span>
+              </div>
+              <h4>Báo cáo Nghiên cứu &amp; Bảo vệ Luận văn</h4>
+              <p class="project-description">Tự động cấu trúc luận điểm thành slide chuẩn phong cách Swiss Design tối giản, kèm Speaker Notes chi tiết và tải file PowerPoint (.pptx) trực tiếp.</p>
+              <ul class="project-details">
+                <li>Tỉ lệ 16:9 Widescreen</li>
+                <li>Bố cục 2-3 cột tối giản</li>
+                <li>Speaker Notes sắc nét</li>
+              </ul>
+              <div class="project-link">
+                <span>Tạo bộ Slide</span>
+                <span aria-hidden="true">↗</span>
+              </div>
+            </div>
+          </article>
+
+          <!-- Card 5: Computer Science (project-delete style) -->
+          <article class="project-card project-delete shelf-card" data-mode="cs_it" data-prompt="Phân tích độ phức tạp thuật toán và cài đặt cấu trúc dữ liệu tối ưu bằng Python có kèm kiểm thử thực tế.">
+            <div class="project-visual">
+              <span class="visual-word" aria-hidden="true">CODE.</span>
+              <div class="visual-index">05 / KHOA HỌC MÁY TÍNH</div>
+              <div class="guard-window">
+                <div class="guard-label">ALGORITHM ANALYSIS <span>↗</span></div>
+                <div class="guard-command"><span>❯</span> def quicksort(arr): ...</div>
+                <div class="card-visual">
+                  <span>$$\mathcal{O}(N \log N)$$</span>
+                </div>
+              </div>
+              <span class="visual-note">Big-O • Data Structures</span>
+            </div>
+            <div class="project-content">
+              <span class="project-number" aria-hidden="true">05</span>
+              <div class="project-heading">
+                <h3>Khoa học Máy tính</h3>
+                <span class="license">ALGO &amp; CODE</span>
+              </div>
+              <h4>Cấu trúc dữ liệu, Giải thuật &amp; Hệ thống</h4>
+              <p class="project-description">Phân tích Big-O thời gian &amp; bộ nhớ, viết code sạch và chạy kiểm thử thuật toán tức thì trong Sandbox.</p>
+              <ul class="project-details">
+                <li>Độ phức tạp Big-O</li>
+                <li>Tối ưu bộ nhớ</li>
+                <li>Kiểm thử thuật toán</li>
+              </ul>
+              <div class="project-link">
+                <span>Bắt đầu nghiên cứu</span>
+                <span aria-hidden="true">↗</span>
+              </div>
+            </div>
+          </article>
+
+          <!-- Card 6: Exercise & Math First Principles (project-python style) -->
+          <article class="project-card project-python shelf-card" data-mode="exercise" data-prompt="Hướng dẫn giải bài tập từng bước theo tư duy First Principles: Cho hàm sản xuất Cobb-Douglas Y = A * K^alpha * L^(1-alpha), hãy chứng minh lợi tức không đổi theo quy mô.">
+            <div class="project-visual">
+              <span class="visual-word" aria-hidden="true">MATH.</span>
+              <div class="visual-index">06 / GIẢI BÀI TẬP TỪNG BƯỚC</div>
+              <div class="file-conversion">
+                <div class="file-column">
+                  <span>Giả thiết:</span>
+                  <code>Hàm Cobb-Douglas</code>
+                </div>
+                <b>→</b>
+                <div class="card-visual">
+                  <span>$$Y = A K^{\alpha} L^{1-\alpha}$$</span>
+                </div>
+              </div>
+              <span class="visual-note">First Principles</span>
+            </div>
+            <div class="project-content">
+              <span class="project-number" aria-hidden="true">06</span>
+              <div class="project-heading">
+                <h3>Giải Bài Tập Từng Bước</h3>
+                <span class="license">FIRST PRINCIPLES</span>
+              </div>
+              <h4>Tư duy nền tảng &amp; Chứng minh toán học</h4>
+              <p class="project-description">Trình bày giả thiết, định lý nền tảng và biến đổi đại số tường minh từng bước không nhảy cóc.</p>
+              <ul class="project-details">
+                <li>Biến đổi từng bước</li>
+                <li>Không ảo giác công thức</li>
+                <li>Diễn giải trực quan</li>
+              </ul>
+              <div class="project-link">
+                <span>Bắt đầu giải bài</span>
+                <span aria-hidden="true">↗</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- KHU VỰC HỘI THOẠI (CHAT STREAM) -->
+    <section class="chat-stream" id="chatStream" aria-live="polite"></section>
+  </main>
+
+  <!-- THANH NHẬP LIỆU NỔI KIỂU APPLE INTELLIGENCE DOCK -->
+  <footer class="composer-dock" id="composerDock">
+    <!-- MINI FLOATING CAPSULE KHI DOCK ĐƯỢC THU GỌN -->
+    <div class="dock-mini-bar" id="dockMiniBar" title="Nhấn hoặc nhấn Enter để mở rộng khung hỏi đáp AI">
+      <span class="mini-icon">💬</span>
+      <span class="mini-text">Hỏi đáp AI · Kéo thả tài liệu</span>
+      <span class="mini-shortcut">Enter để mở</span>
+      <button class="mini-expand-btn" id="miniExpandBtn" type="button">▲ Mở rộng</button>
+    </div>
+
+    <div class="composer-wrapper" id="composerWrapper">
+      <!-- THANH ĐIỀU KHIỂN PHỤ TRÊN ĐẦU DOCK -->
+      <div class="composer-top-controls">
+        <button class="dock-ctrl-btn upload-trigger-btn" id="uploadTriggerBtn" type="button" title="Bật/Tắt vùng kéo thả tài liệu">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+          <span id="uploadTriggerLabel">📎 Tải tài liệu (PDF, CSV)</span>
+        </button>
+        <button class="dock-ctrl-btn dock-minimize-btn" id="dockMinimizeBtn" type="button" title="Thu nhỏ thanh nhập liệu để xem toàn bộ website">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          <span>− Thu nhỏ thanh chat</span>
+        </button>
+      </div>
+
+      <!-- Lucian UX/UI Prompt #032 · MIT License (c) 2026 Seokwoooo · https://lucianlabs.dev/uxui-prompt/#032 -->
+      <div class="ux u032 collapsed" id="u032Upload">
+        <button class="u032-close-btn" id="u032CloseBtn" type="button" aria-label="Đóng vùng tải file" title="Đóng vùng tải file">✕</button>
+        <button class="u032-zone" id="u032Zone" type="button" aria-label="Kéo thả hoặc chọn file để tải lên">
+          <svg class="u032-dash" aria-hidden="true"><rect width="100%" height="100%" rx="16"/></svg>
+          <span class="u032-orb" aria-hidden="true">
+            <svg viewBox="0 0 28 28"><path d="M8.5 20.5H7a5 5 0 0 1-.6-10 7 7 0 0 1 13.4-1.6A5.5 5.5 0 0 1 21 20.5h-1.5M14 13v10M10.5 16.5L14 13l3.5 3.5"/></svg>
+          </span>
+          <b>Kéo thả tài liệu vào đây hoặc <em>chọn file từ máy</em></b>
+          <small>PDF, DOCX, CSV, TSV, TXT, MD · Tối đa 32 MB • Tự động nạp Sandbox & Context 16K</small>
+        </button>
+        <input class="u032-file" id="fileInput" type="file" multiple tabindex="-1" aria-hidden="true" accept=".pdf,.docx,.doc,.txt,.md,.csv,.tsv,.json" />
+        <ul class="u032-list" id="u032List" aria-live="polite"></ul>
+      </div>
+
+      <!-- LUCIANLABS QUICK PROMPT ACTION CHIPS -->
+      <div class="quick-chips-dock" id="quickChipsDock">
+        <button class="chip-btn chip-highlight" data-action="interactive" title="Học từ video: Biến tài liệu thành Web App tương tác sinh động">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          🎬 Web App Tương Tác
+        </button>
+        <button class="chip-btn" data-action="slide">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          Tạo Slide PPTX
+        </button>
+        <button class="chip-btn" data-action="paper">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          Phân tích sâu Paper
+        </button>
+        <button class="chip-btn" data-action="ols">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M19 9l-5 5-4-4-3 3"/></svg>
+          Hồi quy OLS & Sandbox
+        </button>
+        <button class="chip-btn" data-action="math">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19L9 5h3l5 14M7 14h8"/></svg>
+          Toán First Principles
+        </button>
+        <button class="chip-btn" data-action="quiz">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Trắc nghiệm & Flashcard
+        </button>
+      </div>
+
+      <!-- GEMINI SKILLS / SLASH COMMAND POPUP MENU -->
+      <div class="slash-popup hidden" id="slashPopup">
+        <div class="slash-header">
+          <span>⚡ LỰA CHỌN KỸ NĂNG (Gõ / hoặc dùng phím mũi tên)</span>
+          <span class="slash-esc">ESC để đóng</span>
+        </div>
+        <div class="slash-list" id="slashList">
+          <div class="slash-item active" data-cmd="/interactive">
+            <span class="slash-icon">🎬</span>
+            <div class="slash-info">
+              <b>/interactive</b>
+              <small>Biến tài liệu thành Web App tương tác đa mốc (Timeline Scrubber)</small>
+            </div>
+          </div>
+          <div class="slash-item" data-cmd="/slide">
+            <span class="slash-icon">📑</span>
+            <div class="slash-info">
+              <b>/slide</b>
+              <small>Thiết kế Slide thuyết trình Swiss Design (Tải file PowerPoint .pptx)</small>
+            </div>
+          </div>
+          <div class="slash-item" data-cmd="/paper">
+            <span class="slash-icon">📄</span>
+            <div class="slash-info">
+              <b>/paper</b>
+              <small>Phân tích sâu đa chiều luận điểm, cơ chế & bảng so sánh Markdown</small>
+            </div>
+          </div>
+          <div class="slash-item" data-cmd="/ols">
+            <span class="slash-icon">📊</span>
+            <div class="slash-info">
+              <b>/ols</b>
+              <small>Ước lượng Hồi quy OLS, ma trận White & chạy code Python Sandbox</small>
+            </div>
+          </div>
+          <div class="slash-item" data-cmd="/math">
+            <span class="slash-icon">📐</span>
+            <div class="slash-info">
+              <b>/math</b>
+              <small>Chứng minh công thức Toán học chuẩn mực bằng First Principles</small>
+            </div>
+          </div>
+          <div class="slash-item" data-cmd="/quiz">
+            <span class="slash-icon">🎯</span>
+            <div class="slash-info">
+              <b>/quiz</b>
+              <small>Tạo bộ 5 câu trắc nghiệm chuyên sâu và Flashcard ôn tập nhanh</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="composer-box">
+        <button class="attach-btn" id="attachBtn" title="Đính kèm PDF, DOCX, CSV, TSV, MD">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+          </svg>
+        </button>
+
+        <textarea
+          id="promptInput"
+          rows="1"
+          placeholder="Đặt câu hỏi Kinh tế lượng, tải file CSV/PDF hoặc yêu cầu viết code Python/R..."
+        ></textarea>
+
+        <button class="send-btn" id="sendBtn" title="Gửi câu hỏi (Enter)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+            <line x1="12" y1="19" x2="12" y2="5"></line>
+            <polyline points="5 12 12 5 19 12"></polyline>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODAL CÀI ĐẶT THAM SỐ MÔ HÌNH -->
+  <div class="apple-modal-backdrop hidden" id="settingsModal">
+    <div class="apple-modal">
+      <div class="modal-header">
+        <h3>Tinh chỉnh thông số Engine</h3>
+        <button class="modal-close" id="closeSettingsBtn">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="control-group">
+          <label for="tempInput">Độ sáng tạo (Temperature): <strong id="tempVal">0.3</strong></label>
+          <input type="range" id="tempInput" min="0" max="1" step="0.05" value="0.3" />
+          <small>Mức 0.1 - 0.3 giúp công thức toán và ước lượng Kinh tế lượng chính xác nhất.</small>
+        </div>
+
+        <div class="control-group">
+          <label for="ctxInput">Cửa sổ ngữ cảnh (`num_ctx`): <strong id="ctxVal">8192</strong> tokens</label>
+          <select id="ctxInput" class="apple-select">
+            <option value="4096">4,096 tokens (Siêu nhẹ)</option>
+            <option value="8192">8,192 tokens (Tiêu chuẩn)</option>
+            <option value="12288">12,288 tokens (Đọc tài liệu vừa)</option>
+            <option value="16384" selected>16,384 tokens (Hỗ trợ file CSV 14K - 16K)</option>
+            <option value="20480">20,480 tokens (Mở rộng cho dữ liệu lớn)</option>
+            <option value="32768">32,768 tokens (Tối đa Qwen 7B)</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label for="maxTokensInput">Độ dài phản hồi tối đa (`max_tokens`): <strong id="maxTokensVal">3000</strong></label>
+          <input type="range" id="maxTokensInput" min="512" max="8192" step="256" value="3000" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL CHIA SẺ ĐIỆN THOẠI & CLOUDFLARE TUNNEL -->
+  <div class="apple-modal-backdrop hidden" id="shareModal">
+    <div class="apple-modal share-modal-dialog">
+      <div class="modal-header">
+        <h3>Kết nối liền mạch qua Thiết bị</h3>
+        <button class="modal-close" id="closeShareBtn">✕</button>
+      </div>
+      <div class="modal-body share-grid">
+        <!-- Cột trái: Link Chia sẻ bạn bè (Chính) & Địa chỉ Wi-Fi nội bộ (Phụ / Riêng tư) -->
+        <div class="share-col-left">
+          <!-- 1. Thẻ Cloudflare HTTPS Tunnel: LINK DUY NHẤT ĐỂ GỬI CHO BẠN BÈ -->
+          <div class="share-card share-card-primary">
+            <div class="share-card-header">
+              <span class="share-tag tag-primary">🌐 LINK CHIA SẺ BẠN BÈ (TOÀN CẦU / 4G / WI-FI)</span>
+              <button class="copy-url-btn copy-btn-primary" data-target="tunnelUrlText" title="Sao chép link gửi bạn bè">Sao chép link</button>
+            </div>
+            <p class="share-url url-primary" id="tunnelUrlText">Đang khởi tạo đường hầm...</p>
+            <small class="share-hint">👉 Gửi link này qua Zalo/Mess — bạn bè ở bất kỳ đâu cũng vào được.</small>
+          </div>
+
+          <!-- 2. Thẻ Mạng Wi-Fi Nội bộ: RIÊNG TƯ, ĐÃ BỎ NÚT COPY ĐỂ TRÁNH DÁN LUNG TUNG -->
+          <div class="share-card share-card-private">
+            <div class="share-card-header">
+              <span class="share-tag tag-private">🔒 ĐỊA CHỈ NỘI BỘ (CHỈ THIẾT BỊ CÙNG WI-FI NHÀ)</span>
+              <span class="private-badge">Riêng tư</span>
+            </div>
+            <p class="share-url url-private" id="localUrlText">http://127.0.0.1:5000</p>
+            <small class="share-warning">⚠️ Địa chỉ IP này là của riêng máy bạn. Người ở mạng khác hoặc dùng 4G/5G sẽ không vào được.</small>
+          </div>
+        </div>
+
+        <!-- Cột phải: Khung hiển thị mã QR (148x148px) -->
+        <div class="share-col-right">
+          <div class="share-qr-frame">
+            <span class="share-tag">QUÉT MÃ QR BẰNG CAMERA</span>
+            <div class="qr-img-wrapper">
+              <img id="shareQrImg" src="" alt="Mã QR kết nối" style="display: none;" />
+            </div>
+            <small>Dùng camera điện thoại quét mã để vào chat ngay!</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPTS NGOẠI TUYẾN & KATEX -->
+  <script src="vendor/marked.min.js"></script>
+  <script src="vendor/purify.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script src="app.js?v=5.1"></script>
+</body>
+</html>

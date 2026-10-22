@@ -1,0 +1,16 @@
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.env
+.env.*
+!.env.example
+data/
+sandbox/
+source_videos/
+*.db
+*.db-*
+*.log
+*.zip
+tunnel_url.txt
+.DS_Store

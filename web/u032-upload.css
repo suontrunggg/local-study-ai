@@ -1,0 +1,457 @@
+/* Lucian UX/UI Prompt #032 · MIT License (c) 2026 Seokwoooo · https://lucianlabs.dev/uxui-prompt/#032 */
+
+:root {
+  color-scheme: light;
+  --ux-page: #F4F4EF;
+  --ux-surface: #FFFFFF;
+  --ux-surface-2: #F5F3EF;
+  --ux-surface-3: #EAE7E1;
+  --ux-ink: #20231F;
+  --ux-ink-2: #686D63;
+  --ux-ink-3: #858C7B;
+  --ux-line: #D3D6CA;
+  --ux-line-2: rgba(32, 35, 31, 0.16);
+  --ux-accent: #658F28;
+  --ux-accent-2: #314734;
+  --ux-accent-soft: rgba(101, 143, 40, 0.12);
+  --ux-accent-ink: #FFFFFF;
+  --ux-mint: #658F28;
+  --ux-warn: #D6731E;
+  --ux-danger: #D93A55;
+  --ux-glass: rgba(244, 244, 239, 0.85);
+  --ux-glass-line: rgba(255, 255, 255, 0.85);
+  --ux-shadow: rgba(32, 35, 31, 0.06);
+  --ux-shadow-strong: rgba(32, 35, 31, 0.18);
+  --ux-grad: linear-gradient(120deg, #658F28, #314734 55%, #7DB4FF);
+  --ux-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ux-spring: cubic-bezier(0.34, 1.45, 0.64, 1);
+}
+
+body.dark-mode, :root[data-theme="dark"] {
+  color-scheme: dark;
+  --ux-page: #0E110E;
+  --ux-surface: #141814;
+  --ux-surface-2: #1C221C;
+  --ux-surface-3: #262E25;
+  --ux-ink: #F2F5ED;
+  --ux-ink-2: #959E8E;
+  --ux-ink-3: #79836D;
+  --ux-line: rgba(255, 255, 255, 0.12);
+  --ux-line-2: rgba(255, 255, 255, 0.2);
+  --ux-accent: #D7FA68;
+  --ux-accent-2: #869F60;
+  --ux-accent-soft: rgba(215, 250, 104, 0.15);
+  --ux-accent-ink: #0E110E;
+  --ux-mint: #D7FA68;
+  --ux-warn: #FFB26B;
+  --ux-danger: #FF7D8C;
+  --ux-glass: rgba(20, 24, 20, 0.85);
+  --ux-glass-line: rgba(255, 255, 255, 0.15);
+  --ux-shadow: rgba(0, 0, 0, 0.45);
+  --ux-shadow-strong: rgba(0, 0, 0, 0.72);
+  --ux-grad: linear-gradient(120deg, #D7FA68, #869F60 55%, #7DB4FF);
+}
+
+.ux, .ux *, .ux *::before, .ux *::after {
+  box-sizing: border-box;
+}
+
+.ux {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", sans-serif;
+  color: var(--ux-ink);
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: -0.01em;
+  -webkit-tap-highlight-color: transparent;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+:where(.ux) :is(button, input, textarea, select) {
+  font: inherit;
+  color: inherit;
+}
+:where(.ux) button {
+  cursor: pointer;
+}
+.ux :focus-visible {
+  outline: 2px solid var(--ux-accent);
+  outline-offset: 3px;
+}
+.ux [hidden] {
+  display: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ux, .ux *, .ux *::before, .ux *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ==========================================================
+   COMPONENT .u032 (DRAG-AND-DROP UPLOAD)
+   ========================================================== */
+
+.u032 {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 0 10px 0;
+  transition: opacity 0.3s var(--ux-ease), transform 0.3s var(--ux-ease);
+}
+
+.u032.collapsed {
+  display: none !important;
+}
+
+.u032-close-btn {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid var(--ux-line);
+  background: var(--ux-surface);
+  color: var(--ux-ink-3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  line-height: 1;
+  font-weight: 700;
+  cursor: pointer;
+  z-index: 10;
+  box-shadow: 0 2px 6px var(--ux-shadow);
+  transition: all 0.2s var(--ux-ease);
+}
+
+.u032-close-btn:hover {
+  background: var(--ux-danger);
+  color: #ffffff;
+  border-color: var(--ux-danger);
+  transform: scale(1.08);
+}
+
+.u032-zone {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 82px;
+  border: 1px solid var(--ux-line);
+  padding: 12px 18px;
+  border-radius: 16px;
+  background: var(--ux-surface);
+  color: var(--ux-ink);
+  cursor: pointer;
+  box-shadow: 0 4px 16px var(--ux-shadow);
+  transition: transform 0.4s var(--ux-spring), min-height 0.3s var(--ux-spring), background-color 0.3s var(--ux-ease), box-shadow 0.3s, border-color 0.3s;
+}
+
+.u032-zone:focus-visible {
+  outline: 2px solid var(--ux-accent);
+  outline-offset: 3px;
+}
+
+.u032-zone svg.u032-dash {
+  position: absolute;
+  left: 2px;
+  top: 2px;
+  width: calc(100% - 4px);
+  height: calc(100% - 4px);
+  overflow: visible;
+  pointer-events: none;
+}
+
+.u032-dash rect {
+  fill: none;
+  stroke: var(--ux-line-2);
+  stroke-width: 1.8;
+  stroke-dasharray: 6 6;
+  transition: stroke 0.3s var(--ux-ease);
+}
+
+.u032-zone:hover .u032-dash rect,
+.u032.is-over .u032-dash rect {
+  stroke: var(--ux-accent);
+  animation: u032-march 0.9s linear infinite;
+}
+
+@keyframes u032-march {
+  to {
+    stroke-dashoffset: -24;
+  }
+}
+
+.u032.is-over .u032-zone {
+  transform: scale(1.01);
+  min-height: 98px;
+  background: color-mix(in srgb, var(--ux-accent) 6%, var(--ux-surface));
+  border-color: var(--ux-accent);
+  box-shadow: 0 8px 24px var(--ux-shadow-strong);
+}
+
+/* LucianLabs Harmonized Swiss Orb */
+.u032-orb {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  color: #d7fa68;
+  background: #242c25;
+  border: 1px solid #3d4a39;
+  box-shadow: 0 6px 16px -4px rgba(36, 44, 37, 0.35);
+  transition: transform 0.4s var(--ux-spring), background-color 0.2s;
+}
+
+body.dark-mode .u032-orb {
+  background: #171d18;
+  color: var(--acid);
+  border-color: #384635;
+  box-shadow: 0 6px 16px -4px rgba(0, 0, 0, 0.6);
+}
+
+.u032-orb svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.u032-zone:hover .u032-orb {
+  transform: translateY(-2px);
+}
+
+.u032.is-over .u032-orb {
+  transform: translateY(-4px) scale(1.08) rotate(-4deg);
+}
+
+.u032-zone b {
+  margin-top: 6px;
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--ux-ink);
+}
+
+.u032-zone b em {
+  font-style: normal;
+  color: var(--ux-accent);
+}
+
+.u032-zone small {
+  margin-top: 2px;
+  font-size: 11px;
+  color: var(--ux-ink-3);
+}
+
+.u032-file {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.u032-list {
+  margin: 10px 0 4px;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.u032-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 56px;
+  padding: 0 12px;
+  border-radius: 16px;
+  background: var(--ux-surface);
+  box-shadow: 0 0 0 1px var(--ux-line), 0 2px 8px var(--ux-shadow);
+  overflow: hidden;
+  animation: u032-in 0.5s var(--ux-spring);
+}
+
+@keyframes u032-in {
+  from {
+    transform: translateY(-10px) scale(0.96);
+    opacity: 0;
+  }
+}
+
+.u032-row.out {
+  transition: transform 0.35s var(--ux-ease), opacity 0.3s;
+  transform: translateX(30px);
+  opacity: 0;
+}
+
+.u032-ic {
+  width: 34px;
+  height: 38px;
+  flex: none;
+  border-radius: 8px;
+  display: grid;
+  place-items: end center;
+  padding-bottom: 5px;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #ffffff;
+  background: var(--c);
+}
+
+.u032-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.u032-meta b {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 650;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.u032-meta small {
+  display: block;
+  margin-top: 2px;
+  font-size: 11.5px;
+  color: var(--ux-ink-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.u032-bar {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  width: 100%;
+  background: var(--ux-accent);
+  transform-origin: 0 50%;
+  transform: scaleX(var(--p, 0));
+  transition: transform 0.2s linear, background-color 0.3s, opacity 0.5s 0.4s;
+}
+
+.u032-row.done .u032-bar {
+  background: var(--ux-mint);
+  opacity: 0;
+}
+
+.u032-row.fail .u032-bar {
+  background: var(--ux-danger);
+}
+
+.u032-st {
+  width: 28px;
+  height: 28px;
+  flex: none;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+}
+
+.u032-st svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.u032-row.done .u032-st {
+  background: var(--ux-mint);
+  color: var(--ux-accent-ink);
+  animation: u032-pop 0.45s var(--ux-spring);
+}
+
+@keyframes u032-pop {
+  from {
+    transform: scale(0.3);
+  }
+}
+
+.u032-row.done .u032-st path {
+  stroke-dasharray: 16;
+  stroke-dashoffset: 16;
+  animation: u032-draw 0.4s var(--ux-ease) 0.15s forwards;
+}
+
+@keyframes u032-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.u032-row.fail .u032-meta small {
+  color: var(--ux-danger);
+}
+
+.u032-retry {
+  height: 30px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--ux-danger) 12%, transparent);
+  color: var(--ux-danger);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.u032-retry:focus-visible {
+  outline: 2px solid var(--ux-danger);
+  outline-offset: 2px;
+}
+
+.u032-del {
+  height: 28px;
+  width: 28px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ux-ink-3);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+  flex: none;
+}
+
+.u032-del:hover {
+  background: var(--ux-line);
+  color: var(--ux-danger);
+}
+
+.u032-spin {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--ux-surface-3);
+  border-top-color: var(--ux-accent);
+  animation: u032-rot 0.8s linear infinite;
+}
+
+@keyframes u032-rot {
+  to {
+    transform: rotate(360deg);
+  }
+}

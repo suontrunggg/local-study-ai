@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard — Phân tích & Giám sát Hệ thống</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #0b0c0e;
+      --surface: #151619;
+      --surface-border: rgba(255, 255, 255, 0.08);
+      --accent: #2997ff;
+      --accent-green: #30d158;
+      --accent-purple: #bf5af2;
+      --accent-orange: #ff9f0a;
+      --accent-red: #ff453a;
+      --text: #f5f5f7;
+      --text-muted: #86868b;
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      min-height: 100vh;
+      padding-bottom: 60px;
+    }
+
+    /* HEADER */
+    .dash-header {
+      background: rgba(21, 22, 25, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--surface-border);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      padding: 14px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-purple));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .brand h1 {
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .brand span {
+      background: rgba(41, 151, 255, 0.15);
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 20px;
+      margin-left: 6px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--surface-border);
+      color: var(--text);
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.14);
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+    }
+
+    .btn-primary:hover {
+      background: #0077ed;
+    }
+
+    .btn-danger {
+      color: var(--accent-red);
+      background: rgba(255, 69, 58, 0.1);
+      border-color: rgba(255, 69, 58, 0.2);
+    }
+
+    .btn-danger:hover {
+      background: rgba(255, 69, 58, 0.2);
+    }
+
+    /* MAIN CONTAINER */
+    .container {
+      max-width: 1200px;
+      margin: 28px auto 0;
+      padding: 0 20px;
+    }
+
+    /* KPI CARDS */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 18px;
+      margin-bottom: 28px;
+    }
+
+    .kpi-card {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: 16px;
+      padding: 22px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.25s;
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(255, 255, 255, 0.16);
+    }
+
+    .kpi-title {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .kpi-value {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+
+    .kpi-sub {
+      font-size: 12.5px;
+      color: var(--text-muted);
+    }
+
+    .kpi-sub strong {
+      color: var(--text);
+    }
+
+    .badge-highlight {
+      background: rgba(48, 209, 88, 0.15);
+      color: var(--accent-green);
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    /* ANALYTICS SECTION */
+    .section-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 28px;
+    }
+
+    @media (max-width: 860px) {
+      .section-grid { grid-template-columns: 1fr; }
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: 16px;
+      padding: 22px;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .panel-header h2 {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .progress-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .progress-item {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+    }
+
+    .progress-meta span:first-child {
+      font-weight: 500;
+    }
+
+    .progress-meta span:last-child {
+      color: var(--text-muted);
+    }
+
+    .progress-bar-bg {
+      height: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      background: var(--accent);
+      transition: width 0.5s ease;
+    }
+
+    /* TABLE SECTION */
+    .table-container {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 28px;
+    }
+
+    .table-header {
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--surface-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .table-header h2 {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .table-scroll {
+      overflow-x: auto;
+      max-height: 480px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 13px;
+    }
+
+    th {
+      background: rgba(255, 255, 255, 0.03);
+      padding: 12px 18px;
+      font-weight: 600;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--surface-border);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    td {
+      padding: 12px 18px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: var(--text);
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .tag-source {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11.5px;
+      font-weight: 600;
+    }
+
+    .tag-qr { background: rgba(48, 209, 88, 0.15); color: var(--accent-green); }
+    .tag-tunnel { background: rgba(41, 151, 255, 0.15); color: var(--accent); }
+    .tag-lan { background: rgba(255, 159, 10, 0.15); color: var(--accent-orange); }
+    .tag-local { background: rgba(191, 90, 242, 0.15); color: var(--accent-purple); }
+
+    .tag-act-upload { background: rgba(48, 209, 88, 0.18); color: var(--accent-green); border: 1px solid rgba(48, 209, 88, 0.3); }
+    .tag-act-chat { background: rgba(41, 151, 255, 0.18); color: var(--accent); border: 1px solid rgba(41, 151, 255, 0.3); }
+    .tag-act-code { background: rgba(191, 90, 242, 0.18); color: var(--accent-purple); border: 1px solid rgba(191, 90, 242, 0.3); }
+
+    .tag-speed {
+      color: var(--accent-green);
+      font-weight: 700;
+    }
+
+    /* AUTH MODAL */
+    .auth-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .auth-card {
+      background: #1c1d21;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 20px;
+      padding: 32px 28px;
+      width: 100%;
+      max-width: 380px;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    }
+
+    .auth-icon {
+      width: 52px;
+      height: 52px;
+      background: rgba(41, 151, 255, 0.15);
+      color: var(--accent);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      font-size: 24px;
+    }
+
+    .auth-card h3 {
+      font-size: 19px;
+      margin-bottom: 8px;
+    }
+
+    .auth-card p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 22px;
+    }
+
+    .pin-input {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--surface-border);
+      border-radius: 10px;
+      padding: 12px;
+      color: #fff;
+      font-size: 18px;
+      text-align: center;
+      letter-spacing: 4px;
+      margin-bottom: 16px;
+      outline: none;
+    }
+
+    .pin-input:focus {
+      border-color: var(--accent);
+    }
+
+    .auth-btn {
+      width: 100%;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .auth-error {
+      color: var(--accent-red);
+      font-size: 12.5px;
+      margin-top: 10px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- MODAL BẢO MẬT ADMIN PIN -->
+  <div class="auth-overlay" id="authModal" style="display: none;">
+    <div class="auth-card">
+      <div class="auth-icon">🔒</div>
+      <h3>Xác thực Quản trị viên</h3>
+      <p>Khu vực bảo mật độc quyền. Vui lòng nhập mã PIN để xem báo cáo phân tích người dùng.</p>
+      <input type="password" class="pin-input" id="adminPinInput" placeholder="••••••••" maxlength="16" autofocus />
+      <button class="auth-btn" id="submitPinBtn">Mở khóa Dashboard</button>
+      <p class="auth-error" id="authError">Mã PIN không đúng. Vui lòng thử lại.</p>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <header class="dash-header">
+    <div class="brand">
+      <div class="brand-icon">⚡</div>
+      <div>
+        <h1>Study AI <span>Admin Analytics</span></h1>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn" id="refreshBtn">🔄 Làm mới</button>
+      <button class="btn btn-danger" id="resetBtn">🗑️ Reset dữ liệu</button>
+      <a href="/" class="btn btn-primary">💬 Về trang Chat</a>
+    </div>
+  </header>
+
+  <!-- MAIN DASHBOARD -->
+  <main class="container">
+    <!-- 4 KPI CARDS -->
+    <div class="kpi-grid">
+      <!-- Card 1: Visitors -->
+      <div class="kpi-card">
+        <div class="kpi-title">
+          <span>TỔNG LƯỢT TRUY CẬP TRANG</span>
+          <span class="badge-highlight" id="qrCountBadge">0 qua QR</span>
+        </div>
+        <div class="kpi-value" id="kpiVisits">0</div>
+        <div class="kpi-sub">
+          Thiết bị thực tế (IP): <strong id="kpiUniqueIps">0</strong> | Quét qua QR: <strong id="kpiQrVisits">0</strong>
+        </div>
+      </div>
+
+      <!-- Card 2: Speed -->
+      <div class="kpi-card">
+        <div class="kpi-title">
+          <span>TỐC ĐỘ NHẢ TOKEN (GPU)</span>
+          <span style="color:var(--accent-green)">⚡ RTX 4060</span>
+        </div>
+        <div class="kpi-value" style="color:var(--accent-green)" id="kpiAvgSpeed">0 tok/s</div>
+        <div class="kpi-sub">
+          Đỉnh cao nhất: <strong id="kpiMaxSpeed">0 tok/s</strong>
+        </div>
+      </div>
+
+      <!-- Card 3: Total Tokens -->
+      <div class="kpi-card">
+        <div class="kpi-title">
+          <span>TỔNG TOKEN ĐÃ SINH</span>
+          <span style="color:var(--accent)">📝 Miễn phí</span>
+        </div>
+        <div class="kpi-value" id="kpiTokens">0</div>
+        <div class="kpi-sub">
+          Tiết kiệm tương đương: <strong id="kpiMoneySaved" style="color:var(--accent-green)">0 đ</strong>
+        </div>
+      </div>
+
+      <!-- Card 4: Active Time -->
+      <div class="kpi-card">
+        <div class="kpi-title">
+          <span>THỜI GIAN GPU HOẠT ĐỘNG</span>
+          <span style="color:var(--accent-orange)">⏱️ Online</span>
+        </div>
+        <div class="kpi-value" id="kpiDuration">0s</div>
+        <div class="kpi-sub">
+          Tổng số phiên hỏi đáp: <strong id="kpiTotalChats">0</strong> lượt
+        </div>
+      </div>
+    </div>
+
+    <!-- PHÂN TÍCH NGUỒN TRUY CẬP & THIẾT BỊ -->
+    <div class="section-grid">
+      <!-- Panel 1: Nguồn truy cập -->
+      <div class="panel">
+        <div class="panel-header">
+          <h2>Phân bổ Nguồn truy cập (QR vs Link)</h2>
+        </div>
+        <div class="progress-list" id="sourcesList">
+          <p style="color:var(--text-muted);font-size:13px">Đang tải dữ liệu...</p>
+        </div>
+      </div>
+
+      <!-- Panel 2: Thiết bị -->
+      <div class="panel">
+        <div class="panel-header">
+          <h2>Thiết bị Người dùng (Device Analytics)</h2>
+        </div>
+        <div class="progress-list" id="devicesList">
+          <p style="color:var(--text-muted);font-size:13px">Đang tải dữ liệu...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- BẢNG NHẬT KÝ HỎI ĐÁP THỰC TẾ -->
+    <div class="table-container">
+      <div class="table-header">
+        <h2>Nhật ký Hỏi đáp & Tốc độ nhả Token (Thời gian thực)</h2>
+        <span style="font-size:12px;color:var(--text-muted)">Hiển thị các phiên gần nhất</span>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Thời gian</th>
+              <th>Thiết bị</th>
+              <th>Nguồn truy cập</th>
+              <th>Model AI</th>
+              <th>Chuyên ngành</th>
+              <th>Tổng Token</th>
+              <th>Thời gian chạy</th>
+              <th>Tốc độ nhả chữ</th>
+            </tr>
+          </thead>
+          <tbody id="chatsTableBody">
+            <tr>
+              <td colspan="8" style="text-align:center;padding:28px;color:var(--text-muted)">
+                Chưa có phiên hỏi đáp nào được ghi nhận.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- BẢNG NHẬT KÝ HOẠT ĐỘNG CHI TIẾT (AUDIT & FILE UPLOADS LOG) -->
+    <div class="table-container">
+      <div class="table-header">
+        <h2>📜 Nhật ký Hoạt động Người dùng & Tải tài liệu</h2>
+        <span style="font-size:12px;color:var(--text-muted)">Xem ai đã thêm tài liệu nào, hỏi câu gì, vào lúc mấy giờ mấy phút</span>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:140px">Thời gian</th>
+              <th style="width:140px">Thiết bị</th>
+              <th style="width:160px">Nguồn truy cập</th>
+              <th style="width:140px">Hành động</th>
+              <th>Chi tiết hoạt động & Tên file</th>
+            </tr>
+          </thead>
+          <tbody id="activityTableBody">
+            <tr>
+              <td colspan="5" style="text-align:center;padding:28px;color:var(--text-muted)">
+                Chưa có hoạt động nào được ghi nhận.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- BẢNG LƯỢT TRUY CẬP GẦN ĐÂY -->
+    <div class="table-container">
+      <div class="table-header">
+        <h2>Nhật ký Khách truy cập (Visits Feed)</h2>
+        <span style="font-size:12px;color:var(--text-muted)">Ghi nhận mọi lần mở link/quét QR</span>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Thời gian</th>
+              <th>Địa chỉ IP</th>
+              <th>Nguồn truy cập</th>
+              <th>Thiết bị</th>
+              <th>Trình duyệt</th>
+            </tr>
+          </thead>
+          <tbody id="visitsTableBody">
+            <tr>
+              <td colspan="5" style="text-align:center;padding:28px;color:var(--text-muted)">
+                Chưa có lượt truy cập nào.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const AUTH_KEY = "testai_admin_pin";
+    const authModal = document.getElementById("authModal");
+    const pinInput = document.getElementById("adminPinInput");
+    const submitPinBtn = document.getElementById("submitPinBtn");
+    const authError = document.getElementById("authError");
+    const refreshBtn = document.getElementById("refreshBtn");
+    const resetBtn = document.getElementById("resetBtn");
+
+    let currentPin = sessionStorage.getItem(AUTH_KEY) || "";
+
+    async function checkAuthAndLoad() {
+      if (!currentPin) {
+        authModal.style.display = "flex";
+        pinInput.focus();
+        return;
+      }
+
+      await loadDashboardData();
+    }
+
+    submitPinBtn.addEventListener("click", async () => {
+      const pin = pinInput.value.trim();
+      if (!pin) return;
+      const res = await fetch("/api/admin/stats", {headers: {"X-Admin-PIN": pin}});
+      const data = await res.json();
+      if (data.success) {
+        currentPin = pin;
+        sessionStorage.setItem(AUTH_KEY, pin);
+        authModal.style.display = "none";
+        authError.style.display = "none";
+        renderDashboard(data);
+      } else {
+        authError.style.display = "block";
+      }
+    });
+
+    pinInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") submitPinBtn.click();
+    });
+
+    async function loadDashboardData() {
+      try {
+        const res = await fetch("/api/admin/stats", {headers: {"X-Admin-PIN": currentPin}});
+        const data = await res.json();
+        if (!data.success) {
+          sessionStorage.removeItem(AUTH_KEY);
+          authModal.style.display = "flex";
+          authError.style.display = "block";
+          return;
+        }
+        renderDashboard(data);
+      } catch (err) {
+        console.error("Lỗi tải dashboard:", err);
+      }
+    }
+
+    function renderDashboard(data) {
+      const k = data.kpis;
+      document.getElementById("kpiVisits").textContent = k.total_visits;
+      document.getElementById("kpiUniqueIps").textContent = k.unique_ips;
+      document.getElementById("kpiQrVisits").textContent = k.qr_visits;
+      document.getElementById("qrCountBadge").textContent = `${k.qr_visits} lượt qua QR`;
+      
+      document.getElementById("kpiAvgSpeed").textContent = `${k.avg_speed} tok/s`;
+      document.getElementById("kpiMaxSpeed").textContent = `${k.max_speed} tok/s`;
+
+      document.getElementById("kpiTokens").textContent = Number(k.grand_tokens).toLocaleString();
+      document.getElementById("kpiMoneySaved").textContent = k.money_saved_vnd;
+
+      document.getElementById("kpiDuration").textContent = k.total_duration;
+      document.getElementById("kpiTotalChats").textContent = k.total_chats;
+
+      // Nguồn truy cập
+      const sourcesList = document.getElementById("sourcesList");
+      sourcesList.innerHTML = "";
+      const totalSrc = data.sources.reduce((sum, item) => sum + item.count, 0) || 1;
+      data.sources.forEach(s => {
+        const pct = Math.round((s.count / totalSrc) * 100);
+        const uniqueText = s.unique_ips ? ` • ${s.unique_ips} IP` : '';
+        sourcesList.innerHTML += `
+          <div class="progress-item">
+            <div class="progress-meta">
+              <span>${s.source}</span>
+              <span>${s.count} lượt (${pct}%)${uniqueText}</span>
+            </div>
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill" style="width: ${pct}%; background: ${s.source.includes('Mã QR') ? 'var(--accent-green)' : 'var(--accent)'}"></div>
+            </div>
+          </div>
+        `;
+      });
+      if (!data.sources.length) sourcesList.innerHTML = `<p style="color:var(--text-muted);font-size:13px">Chưa có dữ liệu nguồn truy cập.</p>`;
+
+      // Thiết bị
+      const devicesList = document.getElementById("devicesList");
+      devicesList.innerHTML = "";
+      const totalDev = data.devices.reduce((sum, item) => sum + item.count, 0) || 1;
+      data.devices.forEach(d => {
+        const pct = Math.round((d.count / totalDev) * 100);
+        const uniqueText = d.unique_ips ? ` • ${d.unique_ips} thiết bị thực tế` : '';
+        devicesList.innerHTML += `
+          <div class="progress-item">
+            <div class="progress-meta">
+              <span>${d.device}</span>
+              <span>${d.count} lượt (${pct}%)${uniqueText}</span>
+            </div>
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill" style="width: ${pct}%; background: var(--accent-purple)"></div>
+            </div>
+          </div>
+        `;
+      });
+      if (!data.devices.length) devicesList.innerHTML = `<p style="color:var(--text-muted);font-size:13px">Chưa có dữ liệu thiết bị.</p>`;
+
+      // Bảng Chat
+      const chatsBody = document.getElementById("chatsTableBody");
+      chatsBody.innerHTML = "";
+      if (data.recent_chats && data.recent_chats.length > 0) {
+        data.recent_chats.forEach(c => {
+          let srcClass = "tag-source";
+          if (c.source.includes("Mã QR")) srcClass += " tag-qr";
+          else if (c.source.includes("Tunnel")) srcClass += " tag-tunnel";
+          else if (c.source.includes("Wi-Fi")) srcClass += " tag-lan";
+          else srcClass += " tag-local";
+
+          chatsBody.innerHTML += `
+            <tr>
+              <td style="color:var(--text-muted)">${c.time_str}</td>
+              <td><strong>${c.device}</strong></td>
+              <td><span class="${srcClass}">${c.source}</span></td>
+              <td><code>${c.model}</code></td>
+              <td>${c.mode}</td>
+              <td><strong>${Number(c.total_tokens).toLocaleString()}</strong></td>
+              <td>${c.duration_sec}s</td>
+              <td class="tag-speed">⚡ ${c.tok_per_sec} tok/s</td>
+            </tr>
+          `;
+        });
+      } else {
+        chatsBody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--text-muted)">Chưa có phiên hỏi đáp nào.</td></tr>`;
+      }
+
+      // Bảng Hoạt động (Activity Log)
+      const actBody = document.getElementById("activityTableBody");
+      actBody.innerHTML = "";
+      if (data.recent_activities && data.recent_activities.length > 0) {
+        data.recent_activities.forEach(a => {
+          let srcClass = "tag-source";
+          if (a.source.includes("Mã QR")) srcClass += " tag-qr";
+          else if (a.source.includes("Tunnel")) srcClass += " tag-tunnel";
+          else if (a.source.includes("Wi-Fi")) srcClass += " tag-lan";
+          else srcClass += " tag-local";
+
+          let actBadge = "";
+          if (a.action_type === "UPLOAD_DOC") {
+            actBadge = `<span class="tag-source tag-act-upload">📎 Tải tài liệu</span>`;
+          } else if (a.action_type === "CHAT_QUERY") {
+            actBadge = `<span class="tag-source tag-act-chat">💬 Hỏi đáp AI</span>`;
+          } else if (a.action_type === "RUN_CODE") {
+            actBadge = `<span class="tag-source tag-act-code">▶ Chạy Sandbox</span>`;
+          } else {
+            actBadge = `<span class="tag-source">${a.action_type}</span>`;
+          }
+
+          actBody.innerHTML += `
+            <tr>
+              <td style="color:var(--text-muted)"><strong>${a.time_str}</strong></td>
+              <td><strong>${a.device}</strong><br><small style="color:var(--text-muted)">${a.ip}</small></td>
+              <td><span class="${srcClass}">${a.source}</span></td>
+              <td>${actBadge}</td>
+              <td>
+                <div style="font-weight:600;margin-bottom:3px;color:var(--text)">${a.title}</div>
+                <div style="color:var(--text-muted);font-size:12px">${a.details}</div>
+              </td>
+            </tr>
+          `;
+        });
+      } else {
+        actBody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--text-muted)">Chưa có hoạt động nào được ghi nhận.</td></tr>`;
+      }
+
+      // Bảng Visits
+      const visitsBody = document.getElementById("visitsTableBody");
+      visitsBody.innerHTML = "";
+      if (data.recent_visits && data.recent_visits.length > 0) {
+        data.recent_visits.forEach(v => {
+          let srcClass = "tag-source";
+          if (v.source.includes("Mã QR")) srcClass += " tag-qr";
+          else if (v.source.includes("Tunnel")) srcClass += " tag-tunnel";
+          else if (v.source.includes("Wi-Fi")) srcClass += " tag-lan";
+          else srcClass += " tag-local";
+
+          visitsBody.innerHTML += `
+            <tr>
+              <td style="color:var(--text-muted)">${v.time_str}</td>
+              <td><code>${v.ip}</code></td>
+              <td><span class="${srcClass}">${v.source}</span></td>
+              <td><strong>${v.device}</strong></td>
+              <td>${v.browser}</td>
+            </tr>
+          `;
+        });
+      } else {
+        visitsBody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--text-muted)">Chưa có lượt truy cập nào.</td></tr>`;
+      }
+    }
+
+    refreshBtn.addEventListener("click", loadDashboardData);
+
+    resetBtn.addEventListener("click", async () => {
+      if (!confirm("⚠️ Bạn có chắc chắn muốn XÓA TRẮNG toàn bộ lịch sử thống kê và lượt truy cập không?")) return;
+      const res = await fetch("/api/admin/clear_stats", { method: "POST", headers: {"X-Admin-PIN": currentPin} });
+      const data = await res.json();
+      if (data.success) {
+        alert("✓ Đã xóa trắng dữ liệu thống kê thành công.");
+        loadDashboardData();
+      } else {
+        alert("Không thể xóa: " + (data.error || "Mã PIN không đúng"));
+      }
+    });
+
+    // Tự động làm mới mỗi 15 giây
+    setInterval(() => {
+      if (currentPin && authModal.style.display === "none") {
+        loadDashboardData();
+      }
+    }, 15000);
+
+    // Khởi chạy
+    checkAuthAndLoad();
+  </script>
+</body>
+</html>
