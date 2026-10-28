@@ -633,6 +633,16 @@
 
     let currentPin = sessionStorage.getItem(AUTH_KEY) || "";
 
+    // BẢO MẬT DOM XSS: dữ liệu log (prompt, tên file, IP từ header...) là input không tin cậy
+    function esc(value) {
+      return String(value == null ? "" : value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
     async function checkAuthAndLoad() {
       if (!currentPin) {
         authModal.style.display = "flex";
@@ -705,7 +715,7 @@
         sourcesList.innerHTML += `
           <div class="progress-item">
             <div class="progress-meta">
-              <span>${s.source}</span>
+              <span>${esc(s.source)}</span>
               <span>${s.count} lượt (${pct}%)${uniqueText}</span>
             </div>
             <div class="progress-bar-bg">
@@ -726,7 +736,7 @@
         devicesList.innerHTML += `
           <div class="progress-item">
             <div class="progress-meta">
-              <span>${d.device}</span>
+              <span>${esc(d.device)}</span>
               <span>${d.count} lượt (${pct}%)${uniqueText}</span>
             </div>
             <div class="progress-bar-bg">
@@ -750,11 +760,11 @@
 
           chatsBody.innerHTML += `
             <tr>
-              <td style="color:var(--text-muted)">${c.time_str}</td>
-              <td><strong>${c.device}</strong></td>
-              <td><span class="${srcClass}">${c.source}</span></td>
-              <td><code>${c.model}</code></td>
-              <td>${c.mode}</td>
+              <td style="color:var(--text-muted)">${esc(c.time_str)}</td>
+              <td><strong>${esc(c.device)}</strong></td>
+              <td><span class="${srcClass}">${esc(c.source)}</span></td>
+              <td><code>${esc(c.model)}</code></td>
+              <td>${esc(c.mode)}</td>
               <td><strong>${Number(c.total_tokens).toLocaleString()}</strong></td>
               <td>${c.duration_sec}s</td>
               <td class="tag-speed">⚡ ${c.tok_per_sec} tok/s</td>
@@ -784,18 +794,18 @@
           } else if (a.action_type === "RUN_CODE") {
             actBadge = `<span class="tag-source tag-act-code">▶ Chạy Sandbox</span>`;
           } else {
-            actBadge = `<span class="tag-source">${a.action_type}</span>`;
+            actBadge = `<span class="tag-source">${esc(a.action_type)}</span>`;
           }
 
           actBody.innerHTML += `
             <tr>
-              <td style="color:var(--text-muted)"><strong>${a.time_str}</strong></td>
-              <td><strong>${a.device}</strong><br><small style="color:var(--text-muted)">${a.ip}</small></td>
-              <td><span class="${srcClass}">${a.source}</span></td>
+              <td style="color:var(--text-muted)"><strong>${esc(a.time_str)}</strong></td>
+              <td><strong>${esc(a.device)}</strong><br><small style="color:var(--text-muted)">${esc(a.ip)}</small></td>
+              <td><span class="${srcClass}">${esc(a.source)}</span></td>
               <td>${actBadge}</td>
               <td>
-                <div style="font-weight:600;margin-bottom:3px;color:var(--text)">${a.title}</div>
-                <div style="color:var(--text-muted);font-size:12px">${a.details}</div>
+                <div style="font-weight:600;margin-bottom:3px;color:var(--text)">${esc(a.title)}</div>
+                <div style="color:var(--text-muted);font-size:12px">${esc(a.details)}</div>
               </td>
             </tr>
           `;
@@ -817,11 +827,11 @@
 
           visitsBody.innerHTML += `
             <tr>
-              <td style="color:var(--text-muted)">${v.time_str}</td>
-              <td><code>${v.ip}</code></td>
-              <td><span class="${srcClass}">${v.source}</span></td>
-              <td><strong>${v.device}</strong></td>
-              <td>${v.browser}</td>
+              <td style="color:var(--text-muted)">${esc(v.time_str)}</td>
+              <td><code>${esc(v.ip)}</code></td>
+              <td><span class="${srcClass}">${esc(v.source)}</span></td>
+              <td><strong>${esc(v.device)}</strong></td>
+              <td>${esc(v.browser)}</td>
             </tr>
           `;
         });
