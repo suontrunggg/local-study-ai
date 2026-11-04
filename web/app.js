@@ -105,6 +105,16 @@
     }
   });
 
+  // BẢO MẬT DOM XSS: escape text thuần trước khi đưa vào innerHTML
+  function escapeHtml(value) {
+    return String(value == null ? "" : value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
   // 2. Render tĩnh công thức LaTeX trên các thẻ Hero gợi ý ngoài trang chủ
   function renderStaticHeroMath() {
     if (!window.katex) return;
@@ -117,7 +127,7 @@
             displayMode: true,
             throwOnError: false,
             strict: false,
-            trust: true,
+            trust: false,
           });
         } catch (_) {}
       } else if (raw.includes("\\")) {
@@ -126,7 +136,7 @@
             displayMode: true,
             throwOnError: false,
             strict: false,
-            trust: true,
+            trust: false,
           });
         } catch (_) {}
       }
@@ -231,17 +241,17 @@
     // Bước 5: Thay thế các @@MATH_TOKEN_i@@ bằng kết quả katex.renderToString
     // BẮT BUỘC dùng hàm callback html.replace(item.id, () => rendered) để dấu $ không bị JavaScript cắt mất chữ
     mathTokens.forEach((item) => {
-      let rendered = item.tex;
+      let rendered = escapeHtml(item.tex);
       if (window.katex) {
         try {
           rendered = katex.renderToString(item.tex, {
             displayMode: item.display,
             throwOnError: false,
             strict: false,
-            trust: true,
+            trust: false,
           });
         } catch (_) {
-          rendered = `<span class="katex-error">${item.tex}</span>`;
+          rendered = `<span class="katex-error">${escapeHtml(item.tex)}</span>`;
         }
       }
       html = html.replace(item.id, () => rendered);
@@ -377,10 +387,10 @@
           <div class="pptx-text-group">
             <span class="pptx-eyebrow">TẠO FILE THÀNH CÔNG • 100% OFFLINE</span>
             <strong class="pptx-title">🎉 File PowerPoint (.pptx) Đã Sẵn Sàng!</strong>
-            <small class="pptx-sub">${deckTitle} • ${slides.length} Slide 16:9 Swiss Design • Đã nhúng Speaker Notes</small>
+            <small class="pptx-sub">${escapeHtml(deckTitle)} • ${slides.length} Slide 16:9 Swiss Design • Đã nhúng Speaker Notes</small>
           </div>
         </div>
-        <a href="${downloadUrl}" class="pptx-download-btn-instant" download="${filename}">
+        <a href="${downloadUrl}" class="pptx-download-btn-instant" download="${escapeHtml(filename)}">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
             <polyline points="7 10 12 15 17 10"></polyline>
@@ -400,7 +410,7 @@
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
             Xem Trước Slide (${slides.length} Slide)
           </div>
-          <a href="${downloadUrl}" class="download-pptx-btn" download="${filename}" title="Tải file PowerPoint về máy">
+          <a href="${downloadUrl}" class="download-pptx-btn" download="${escapeHtml(filename)}" title="Tải file PowerPoint về máy">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             Tải file (.pptx)
           </a>
@@ -425,7 +435,7 @@
         deckEl.querySelector(".slide-face-eyebrow").textContent = `SLIDE ${cur.slide_num || currentIndex + 1} / ${slides.length} • SWISS DESIGN`;
         deckEl.querySelector(".slide-face-title").textContent = cur.title;
         const ul = deckEl.querySelector(".slide-face-bullets");
-        ul.innerHTML = (cur.bullets || []).map(b => `<li>${b}</li>`).join("");
+        ul.innerHTML = (cur.bullets || []).map(b => `<li>${escapeHtml(b)}</li>`).join("");
         const notesEl = deckEl.querySelector(".slide-face-notes");
         notesEl.textContent = cur.speaker_notes ? `💡 Speaker Notes: ${cur.speaker_notes}` : "💡 Ghi chú: Trình bày tự tin, nhấn mạnh số liệu chính.";
         deckEl.querySelector(".slide-counter").textContent = `Trang ${currentIndex + 1} / ${slides.length}`;
@@ -531,7 +541,7 @@
           <div class="explorer-timeline-track">
             <div class="explorer-timeline-line"></div>
             ${milestones.map((m, idx) => `
-              <div class="explorer-step-dot ${idx === 0 ? 'active' : ''}" data-idx="${idx}" title="${m.title}">
+              <div class="explorer-step-dot ${idx === 0 ? 'active' : ''}" data-idx="${idx}" title="${escapeHtml(m.title)}">
                 0${idx + 1}
               </div>
             `).join("")}
@@ -582,7 +592,7 @@
         const cur = milestones[curIndex];
         periodEl.textContent = `⏱️ ${cur.period}`;
         titleEl.textContent = `0${curIndex + 1}. ${cur.title}`;
-        bulletsEl.innerHTML = cur.mechanism.map(b => `<li>${b}</li>`).join("");
+        bulletsEl.innerHTML = cur.mechanism.map(b => `<li>${escapeHtml(b)}</li>`).join("");
 
         if (cur.formula) {
           formulaEl.style.display = "block";
@@ -593,14 +603,14 @@
 
         if (cur.scene) {
           sceneEl.style.display = "block";
-          sceneEl.innerHTML = `<strong>🎬 Khung cảnh trực quan:</strong> ${cur.scene}`;
+          sceneEl.innerHTML = `<strong>🎬 Khung cảnh trực quan:</strong> ${escapeHtml(cur.scene)}`;
         } else {
           sceneEl.style.display = "none";
         }
 
         if (cur.notes) {
           notesEl.style.display = "block";
-          notesEl.innerHTML = `<strong>💡 Ý nghĩa thực tiễn:</strong> ${cur.notes}`;
+          notesEl.innerHTML = `<strong>💡 Ý nghĩa thực tiễn:</strong> ${escapeHtml(cur.notes)}`;
         } else {
           notesEl.style.display = "none";
         }
@@ -796,7 +806,7 @@
       renderInteractiveTimelineExplorer(aiCard, accumulated);
       state.messages.push({ role: "assistant", content: accumulated });
     } catch (err) {
-      contentSlot.innerHTML = `<p style="color:#ff453a">Không thể kết nối tới máy chủ: ${err.message}</p>`;
+      contentSlot.innerHTML = `<p style="color:#ff453a">Không thể kết nối tới máy chủ: ${escapeHtml(err.message)}</p>`;
     } finally {
       state.isStreaming = false;
     }
@@ -833,7 +843,7 @@
       row.innerHTML = `
         <span class="u032-ic" style="--c:${color}" aria-hidden="true">${ext.slice(0, 4).toUpperCase() || "FILE"}</span>
         <span class="u032-meta">
-          <b>${file.name}</b>
+          <b>${escapeHtml(file.name)}</b>
           <small>0 KB / ${formatBytes(file.size)} · 0%</small>
         </span>
         <span class="u032-st"><span class="u032-spin" aria-hidden="true"></span></span>
